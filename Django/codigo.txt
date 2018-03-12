@@ -1,0 +1,33 @@
+---------------------------------------------------
+REDIRECCION
+---------------------------------------------------
+from django.urls import include
+from django.views.generic import RedirectView
+
+urlpatterns = [
+	path('admin/', admin.site.urls),
+    path('catalog/', include('catalog.urls')),
+    path('', RedirectView.as_view(url='/catalog/', permanent=True)),
+]
+---------------------------------------------------
+INDEX
+---------------------------------------------------
+from django.shortcuts import render
+
+def index(request):
+    """
+    View function for home page of site.
+    """
+    # Generate counts of some of the main objects
+    num_books=Book.objects.all().count()
+    num_instances=BookInstance.objects.all().count()
+    # Available books (status = 'a')
+    num_instances_available=BookInstance.objects.filter(status__exact='a').count()
+    num_authors=Author.objects.count()  # The 'all()' is implied by default.
+    
+    # Render the HTML template index.html with the data in the context variable
+    return render(
+        request,
+        'index.html',
+        context={'num_books':num_books,'num_instances':num_instances,'num_instances_available':num_instances_available,'num_authors':num_authors},
+    )
